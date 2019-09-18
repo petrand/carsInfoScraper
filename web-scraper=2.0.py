@@ -4,10 +4,7 @@ url = 'https://www.carsales.com.au'
 product_url = url + "/cars/ferrari/"
 
 #how you represent yourself for the website
-response = requests.get(product_url, headers={'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'}) 
-
-#Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36''))
-
+response = requests.get(product_url, headers={'user-agent':''})#input your network id 
 print(response.status_code) #requesnt might not get any info if it figures out im a bot 
 #could be denial error 503 
 print(response.content)
@@ -24,28 +21,10 @@ def get_models(response):
     output = page_soup.find('ul',class_='default-facets')
     models = output.find_all('li',class_='facet-visible')
     links = {}
-
-
-    stringLinks = ''
     for i in models:
-        stringLinks = ''
-        print(i, "thjis is i")
-
-        x = i.find_all('a', href = True)#,class_='/cars/ferrari')
+        x = i.find_all('a', href = True)
         y = x[0].text
         links[y] = x[0]['href']
-
-        #print(type(x))
-        #print(page_soup(x.text))
-                #links = output.find_all('a', {'class':'/cars/ferrari/488spider/'})
-    #print(models)
-    #print(output)
-    #print(links)
-    #for i in (links):
-        #print(models, 'models')
-        #print(links, 'links')
-    #    model_dict[links[i]] = links[i]['href']
-
     return links
 
 def get_car_name(product):
@@ -82,7 +61,7 @@ def get_product_body_type(product):
 
 import random
 import time
-header = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'}
+header = {'user-agent': ''}#input your network id
 def scrape(model, url, headers = header, response=response):
     car_dict = {}
     index = 1
@@ -100,7 +79,7 @@ def scrape(model, url, headers = header, response=response):
             if cars is None:
                 break
 
-            #price, model, date, odometer, transmission, bodytype
+            #price, model, date, odometer, transmission, bodytype, engine
             car_models = {}
             for product in cars:
                 car_models[index] = {
@@ -120,18 +99,12 @@ model = get_models(response)
 print(model)
 
 
-cars = scrape(model, url, headers={'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'})
+cars = scrape(model, url, headers={'user-agent': ''})#input your network id
 print(cars)
 
 import pandas as pd
 df = pd.DataFrame(cars)
 df = df.transpose()
-df.to_csv("/Users/petrandreev/Desktop/webScraper/Cars.csv")
+df.to_csv("Cars.csv") #input csv filepath
 
 print(df.head)
-#"/cars/results/?q=(And.Service.Carsales._.(Or.Make.Ferrari._.Make.Ferrari.))
-#div.selected-facets
-#div.facet-name
-#<a class="clear-facet" href="/cars/results/?q=Service.Carsales."></a>
-
-
