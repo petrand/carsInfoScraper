@@ -8,14 +8,12 @@ trends_data = pd.read_csv(TrendsFilepath)
 mix_data = pd.read_csv(MixingInfoFilepath)
 raw_data = pd.read_csv(RawDataFilepath)
 
-
-#columns WRLM_TT8501_Value  WRLM_TT8502_Value
 #filling the columns with the corresponding values from other dataset
 temperature_dict = {}
 time_dict = {'12 PM':'00', '1 AM':'01','2 AM':'02','3 AM':'03','4 AM':'04','5 AM':'05','6 AM':'06','7 AM':'07','8 AM':'08','9 AM':'09','10 AM':'10',
             '11 AM':'11','12 AM':'12','1 PM':'13','2 PM':'14','3 PM':'15','4 PM':'16','5 PM':'17','6 PM':'18','7 PM':'19','8 PM':'20','9 PM':'21','10 PM':'22','11 PM':'23'}
 month_dict = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
-print(trends_data.columns)
+
 for index, row in trends_data.iterrows():
     x = row['DateTime']
     x = x.split()
@@ -23,13 +21,11 @@ for index, row in trends_data.iterrows():
     month = date[7:-3]
     month = month_dict[month]
     date = date[4:-6] + month + '/19'
-    #print(date)
     time = x[1]
     time = time.split(':')
     time = time[0]
     time_val = time_dict[time+' '+x[2]]
     date_time = date + ' ' + time_val
-    print(date_time)
     temperatures = [row['WRLM_TT8501_Value'], row['WRLM_TT8502_Value']]
     temperature_dict[date_time] = temperatures
 
@@ -67,8 +63,6 @@ for index, row in raw_data.iterrows():
             time_val = str(time_val)
             time_val = time_val[0:2]
             time_date[row['Man. Date']] = [time_val]
-        
-        #time_date.append(row['Man. Date'])#row['Man. Time']])
 
 dummyList = ['N/A']*mix_data.shape[0]
 mix_data['Result'] = dummyList
@@ -76,7 +70,6 @@ mix_data['filler_temp'] = dummyList
 mix_data['kettle_temp'] = dummyList
 
 
-print(len(time_date),'Currentlen')
 counter =0
 for index, row in mix_data.iterrows():
     if index %2 == 0:
@@ -89,13 +82,10 @@ for index, row in mix_data.iterrows():
         time = str(time)
         time = time[0:2]
         if time != 'na':
-            #print(time,'before')
             time = int(time)%12
-            #print(time,'after')
             if time< 10:
                 time = '0' + str(time)
         date_time = str(day) + '/' + str(days[1]) + '/' + str(days[2]) + ' ' + str(time)
-        #print(date_time)
         if date_time in temperature_dict:
             values = temperature_dict[date_time]
             if values[0] != 'Null' and values[1] != 'Null':
@@ -122,25 +112,11 @@ for index, row in mix_data.iterrows():
     else:
         mix_data.drop(index, inplace=True)
 
-
-
-print(temperature_dict)
-print(len(bad_responses), "bad responses")
-print(mix_data['Result'])
-print(counter, 'Counter of ones')
-print(mix_data['filler_temp'])
-print(mix_data['kettle_temp'])
-
-
 counter = 0
 for index, row in mix_data.iterrows():    
     if row['filler_temp'] != 'N/A' and row['Result'] ==1:
         counter += 1
-print(counter)
-        
 
-print(len(temperature_dict.keys()))
-print(mix_data.columns)
 # Delete multiple columns from the dataframe
 mix_data = mix_data.drop(columns = [ 'BIN', 'Unnamed: 4', 'RECIPE',
        'PREWEIGH TIME', 'Unnamed: 7', 'Unnamed: 8', 'TASTY CHEESE W',
